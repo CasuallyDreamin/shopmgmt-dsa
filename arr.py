@@ -6,7 +6,7 @@ class arr:
     def insert(self, idx:int, data):
         self.array[idx] = data
 
-    def get_by_idx(self, idx:int):
+    def get(self, idx:int):
         return self.array[idx]
         
 
