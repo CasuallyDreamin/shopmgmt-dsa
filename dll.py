@@ -19,7 +19,6 @@ class dll:
         if self.head != None:
             self.head.prev = new_node
 
-        
         self.head = new_node
         self.size += 1
 
@@ -62,6 +61,18 @@ class dll:
         
         self.size -= 1
 
+    def get_first(self):
+        if self.head == None:
+            return None
+        
+        return self.head.data
+
+    def get_last(self):
+        if self.tail == None:
+            return None
+        
+        return self.tail.data
+    
     def get_all_arr(self):
         
         curr_node = self.head

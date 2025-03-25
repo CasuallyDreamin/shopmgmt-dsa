@@ -4,12 +4,13 @@ from shipment import shipment
 from tools import generate_ship_id
 from arr import arr
 
-class mgmt:
+class ship_mgmt:
     def __init__(self):
         #hashtable for O(1) average-case and O(n) worst-case look up
         #doubly linked list for O(n) show all items
         self.shipments_ht = hashtable()
         self.shipments_dll = dll()
+
 
     def add_shipment(self,
                 ship_id,
@@ -20,7 +21,11 @@ class mgmt:
                 price,
                 category):
         
-        #generating unique shipment id if none given
+        #check if given shipment ID already exists
+        if self.shipments_ht.get(ship_id) != None:
+            return False
+        
+        #generate shipment ID if None given and check that it is unique
         while ship_id == None or self.shipments_ht.get(ship_id) != None:
             ship_id = generate_ship_id(category)
 
@@ -33,6 +38,8 @@ class mgmt:
                  category)
         
         self.shipments_ht.insert(new_shipment.ship_id, new_shipment)
+        
+        return True
 
     def get_shipment_by_id(self, shipment_id) -> shipment | None:
         return self.shipments_ht.get(shipment_id)
@@ -54,7 +61,7 @@ class mgmt:
 
         return target_shipments.get_all_arr()
 
-        
+
 
 
     
