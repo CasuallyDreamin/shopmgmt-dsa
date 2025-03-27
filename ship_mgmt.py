@@ -61,6 +61,15 @@ class ship_mgmt:
 
         return target_shipments.get_all_arr()
 
+    def get_shipments_by_date(self, date):
+        curr_node = self.shipments_dll.head
+        target_shipments = dll()
+
+        while curr_node != None:
+            if curr_node.data.conf_date == date:
+                target_shipments.add_last(curr_node.data)
+            curr_node = curr_node.next
+
 
 
 

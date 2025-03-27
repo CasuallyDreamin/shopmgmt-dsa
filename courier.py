@@ -13,8 +13,12 @@ class courier:
         self.family_name = family_name
         self.full_name = name + ' ' + family_name
         self.capacity = capacity
+        self.curr_shipments = dll()
         self.is_available = True
         self.shipment_history = dll()
         self.delivered = 0
+
+    def assign_shipment(self, shipment):
+        self.curr_shipments.add_last(shipment)
     
         

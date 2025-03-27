@@ -83,9 +83,8 @@ class deli_mgmt:
     def get_all_shipments_in_queue(self):
         return self.shipment_queue.get_all()
     
-    #todo: change sent data stracture to access shipments by date (direct access table + dll)
     def get_shipments_by_date(self, date):
-        return self.ship_mgmt.get_shipment_by_date(date)
+        return self.ship_mgmt.get_shipments_by_date(date)
     
     def get_all_shipments_send(self):
         return self.sent.get_all_arr()
@@ -93,9 +92,14 @@ class deli_mgmt:
     def get_all_shipments_failed(self):
         return self.failed.get_all_arr()
 
-    def assign_shipment(self, shipment, delivery):
-        #todo: assignment logic
-        return
+    def assign_shipment(self, shipment, courier:courier):
+        if courier == None:
+            return False
+
+        if not courier.is_available:
+            return False
+        
+        
 
     def edit_courier_data(self,
             employment_id,
