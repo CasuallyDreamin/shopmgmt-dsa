@@ -17,7 +17,7 @@ class ship_mgmt:
                 weight,
                 sub_id,
                 conf_date,
-                arrival_date,
+                delivered_date,
                 price,
                 category):
         
@@ -33,12 +33,12 @@ class ship_mgmt:
                  weight,
                  sub_id,
                  conf_date,
-                 arrival_date,
+                 delivered_date,
                  price,
                  category)
-        
+
         self.shipments_ht.insert(new_shipment.ship_id, new_shipment)
-        
+        self.shipments_dll.add_first(new_shipment)
         return True
 
     def get_shipment_by_id(self, shipment_id) -> shipment | None:
@@ -48,6 +48,12 @@ class ship_mgmt:
         return self.shipments_dll.get_all_arr()
     
     def get_all_by_max_price(self, max_price) -> arr | None:
+
+        try:
+            max_price = int(max_price)
+        except:
+            return None
+        
         curr_shipment = self.shipments_dll.head
         target_shipments = dll()
 

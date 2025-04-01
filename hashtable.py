@@ -14,25 +14,28 @@ class hashtable:
             self.expand()
 
         index = self.hash_func(key)
-
         new_data = key_value(key, value)
-
+        
+        #linear probing
         while self.arr.get(index) != None:
             if self.arr.get(index).key == key:
-                return
-            index += 1
+                return False
+            index = (index + 1) % self.size
 
         self.arr.insert(index, new_data)
-
         self.occupied += 1
+        return True
     
     def get(self, key):
         index = self.hash_func(key)
-        
-        while self.arr.get(index) != None and index < self.size:
+        first_index = index
+
+        while self.arr.get(index) != None:
             if self.arr.get(index).key == key:
                 return self.arr.get(index).value
-            index += 1
+            index = (index + 1) % self.size
+            if index == first_index:
+                break
 
         return None
 
@@ -46,24 +49,20 @@ class hashtable:
         index = 0
 
         for i in range(key_length):
-            try:
-                index += int(key[i])
-            except:
-                pass
-
+            index += ord(key[i])
+        
         return index**2 % self.size
     
     def expand(self):
+        old_arr = self.arr
 
         self.size = self.size * 2
         self.occupied = 0
 
-        old_arr = self.arr
         self.arr = arr(self.size)
 
         for i in range(old_arr.size):
             curr_data = old_arr.get(i)
-
             if curr_data != None:
                 self.insert(curr_data.key, curr_data.value)
 
