@@ -11,12 +11,12 @@ class deli_mgmt:
         self.couriers_ht = ht()
         self.couriers_dll = dll()
         self.ship_mgmt = ship_mgmt()
-        self.shipment_queue = Q()
+        self.delivery_queue = Q()
         self.sent = dll()
         self.failed = dll()
     
-    def add_courier(self, national_ID, full_name):
-        new_courier = courier(self.employment_id_index, national_ID)
+    def add_courier(self, national_ID, name, family_name):
+        new_courier = courier(self.employment_id_index, national_ID, name, family_name)
         self.employment_id_index += 1
         self.couriers_dll.add_first(new_courier)
         self.couriers_ht.insert(new_courier.employment_id, new_courier)

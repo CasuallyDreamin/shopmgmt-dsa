@@ -1,5 +1,4 @@
-from hashtable import hashtable as ht
-with open('delivered_parcel.txt','r') as f:
-    raw = f.read().split('\n')
-    raw.pop()
-    data = [line.split(',') for line in raw]
+from datetime import datetime
+
+dt = datetime(2001,1,2)
+print(str(dt.date()))

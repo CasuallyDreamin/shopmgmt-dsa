@@ -3,6 +3,7 @@ from hashtable import hashtable
 from shipment import shipment
 from tools import generate_ship_id
 from arr import arr
+from datetime import datetime
 
 class ship_mgmt:
     def __init__(self):
@@ -16,8 +17,8 @@ class ship_mgmt:
                 ship_id,
                 weight,
                 sub_id,
-                conf_date,
-                delivered_date,
+                conf_date:str,
+                delivered_date:str,
                 price,
                 category):
         
@@ -25,10 +26,23 @@ class ship_mgmt:
         if self.shipments_ht.get(ship_id) != None:
             return False
         
+        
         #generate shipment ID if None given and check that it is unique
         while ship_id == None or self.shipments_ht.get(ship_id) != None:
             ship_id = generate_ship_id(category)
-
+        '''
+        conf_date = conf_date.split('-')
+        if len(conf_date) != 3: return False
+        
+        try: conf_date = datetime(int(conf_date[0]), int(conf_date[1]), int(conf_date[2])).date()
+        except: return False
+        
+        delivered_date = delivered_date.split('-')
+        if len(delivered_date) != 3: return False
+        
+        try: delivered_date = datetime(int(delivered_date[0]), int(delivered_date[1]), int(delivered_date[2])).date()
+        except: return False
+        '''
         new_shipment = shipment(ship_id,
                  weight,
                  sub_id,

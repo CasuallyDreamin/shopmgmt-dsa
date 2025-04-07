@@ -1,5 +1,6 @@
 from deli_mgmt import deli_mgmt
 from clear_screen import clear
+from datetime import datetime
 
 del_mgmt = deli_mgmt()
 
@@ -85,19 +86,42 @@ Z. exit
 def handle_shipment_options(opt):
     clear()
     if opt == '1':
-        ship_id = input("ID:")
-        weight = input("weight:")
-        sub_id = input("subscription_ID:")
-        conf_date = input("Order date(yyyy/mm/dd):")
-        delivered_date = input("Delivery date(yyyy/mm/dd):")
-        try:
-            price = int(input("price:"))
-        except:
-            input("Invalid price value. must be an integer.")
-            return
-        
-        category = input("Categpry(F:food C:Cleaners O:Other):")
 
+        ship_id = input("ID (ABC1234):")
+        num_c = 0
+        alpha_c = 0
+        for char in ship_id:
+            if char.isalpha():alpha_c += 1
+            if char.isnumeric():num_c += 1
+        if num_c + alpha_c != 7 or len(ship_id) != 7: return input("ID must be 7 digits long.")
+        if num_c != 4: return input("ID must have 4 numbers.")
+        if alpha_c != 3: return input("ID must have 3 alphabets.")
+            
+        try: weight = int(input("weight:"))
+        except: return input("Weight must be a number.")   
+        if weight < 0: return input("Weight cannot be negative.")
+        
+        sub_id = input("subscription_ID:")
+        if len(sub_id) != 8: return input("Must have 8 digits.")
+        try: sub_id = int(sub_id)
+        except: input("subscription ID must be a number.")
+
+        try: price = int(input("price:"))        
+        except: return input("Invalid price value. must be an integer.")
+        if price < 0: return input("Price cannot be a negative.")
+        
+        conf_date = input("Order date(year-month-day):").split('-')
+        try: conf_date = datetime(int(conf_date[0]), int(conf_date[1]), int(conf_date[2])).date()
+        except: return input("Invalid date format.")
+            
+        delivered_date = input("Delivery date(year-month-day):").split('-')
+        try: delivered_date = datetime(int(delivered_date[0]), int(delivered_date[1]), int(delivered_date[2])).date()
+        except: return input("invalid date format.")    
+        if delivered_date < conf_date: return input("Delivered date cannot be before Order date.")
+
+        category = input("Categpry(F:food C:Cleaners O:Other):")
+        if category not in ['F', 'C', 'O']: return input("invalid category.")
+            
         if del_mgmt.ship_mgmt.add_shipment(
             ship_id,
                 weight,
@@ -106,8 +130,21 @@ def handle_shipment_options(opt):
                 delivered_date,
                 price,
                 category
-        ): input("Done!")
-        
+        ): 
+            input("Done!")
+            
+            file_shipment_format = '\n'\
+            + ship_id + ','\
+            + str(weight) + ','\
+            + str(sub_id) + ','\
+            + str(conf_date) + ','\
+            + str(delivered_date) + ','\
+            + str(price) + ','\
+            + category
+    
+            with open('delivered_parcel.txt','a') as f:
+                f.write(file_shipment_format)
+
         else: input("Invalid Shipment ID or Date format")
     
     elif opt == '2':
