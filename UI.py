@@ -18,7 +18,18 @@ with open('delivered_parcel.txt','r') as f:
             int(parcel[5]),
             parcel[6]
         )
-
+with open('delivery_information.txt','r') as f:
+    raw = f.read().split('\n')
+    raw.pop()
+    data = [line.split(',') for line in raw]
+    for parcel in data:
+        del_mgmt.add_courier(
+            parcel[2],
+            parcel[0],
+            parcel[1],
+            int(parcel[3]),
+            parcel[4]
+        )
 def UI():
     running = True
     while running:
@@ -60,12 +71,12 @@ Z. exit
 2. Find Shipments by courior name
 3. Find top k highest delivery couriers
 4. Show All couriers
-5. Show All shipemnts
-6. Show All shipments in queue
-7. Show All shipments by date
-8. Show All Delivered
-9. Show All Failed
-10. Assign Shipment to courier
+5. Show All deliveries
+6. Show All deliveries in queue
+7. Show All deliveries by date
+8. Show All Delivered shipments
+9. Show All Failed shipments
+10. Assign Delivery to courier
 11. Edit courier info
                                                                                                                                                     
 ''')
@@ -175,17 +186,155 @@ def handle_shipment_options(opt):
 
     
 def handle_deli_options(opt):
-    if opt == '1':pass
-    elif opt == '2':pass
-    elif opt == '3':pass
-    elif opt == '4':pass
-    elif opt == '5':pass
-    elif opt == '6':pass
-    elif opt == '7':pass
-    elif opt == '8':pass
-    elif opt == '9':pass
-    elif opt == '10':pass
-    elif opt == '11':pass
+    clear()
+    if opt == '1':
+        try: national_id = int(input("National ID:"))
+        except: return input('national ID must be an integer.')
+        
+        #todo: check unique national ID
+
+        name = input("Name:")
+        family_name = input("Family Name:")
+        
+        try: 
+            capacity = int(input("capacity:"))
+            if capacity < 1: return input("capacity cannot be less than 1.")
+        except: return input("capacity must be an integer.")
+        
+        availability = input("availability(A:Available / D:Not Available, case sensitive):")
+        if availability not in ['A','D']: return input('invalid new availability.')
+         
+        del_mgmt.add_courier(national_id, name, family_name, capacity, availability)
+        courier_format = '\n'\
+        + name + ','\
+        + family_name + ','\
+        + str(national_id) + ','\
+        + str(capacity) + ','\
+        + availability
+    
+        with open('delivery_information.txt','a') as f:
+            f.write(courier_format)
+
+        return input('Done!')
+                    
+    elif opt == '2':
+        name = input("Name:")
+        family_name = input("Family Name:")
+         
+        shipments = del_mgmt.get_all_shipments_by_courier_full_name(name + ' ' + family_name)
+        if shipments:
+            for i in range(shipments.size):
+                temp = shipments.get(i)
+                print(temp.ship_id)
+            
+            return input()
+        
+        else: return input("Courier not found.")
+        
+    elif opt == '3':
+        try: top_couriers = del_mgmt.get_top_couriers(int(input("Enter number of top couriers:")))
+        except: input("Must enter a positive integer.")
+        
+        print("id, full name, delivery count")
+        for i in range(top_couriers.size):
+            temp = top_couriers.get(i)
+            print(f"{temp.employment_id},{temp.full_name},{temp.delivered}")
+        
+        return input()
+    
+    elif opt == '4':
+        couriers = del_mgmt.get_all_couriers()
+        print("Employment ID , National ID , Full name , Capacity , Availability")
+        for i in range(couriers.size):
+            temp = couriers.get(i)
+            print(f"{temp.employment_id},{temp.national_id},{temp.full_name},{temp.capacity},{temp.is_available}")
+        
+        return input()
+
+    elif opt == '5':
+        deliveries = del_mgmt.get_all_deliveries()
+        for i in range(deliveries.size):
+            temp = deliveries.get(i)
+            print(temp.courier,",",temp.shipment)
+        return input()
+    
+    elif opt == '6':
+        deliveries = del_mgmt.get_all_deliveries_in_queue()
+        for i in range(deliveries.size):
+            temp = deliveries.get(i)
+            print(temp.courier,",",temp.shipment)
+        return input()
+    
+    elif opt == '7':
+        date = input("Enter Date(year-month-day):").split('-')
+        
+        try: date = datetime(int(date[0]), int(date[1]), int(date[2])).date()
+        except: return input("invalid date format.")    
+
+        deliveries = del_mgmt.get_deliveries_by_date(date)
+
+        for i in range(deliveries.size):
+            temp = deliveries.get(i)
+            print(temp.courier,",",temp.shipment)
+
+        return input()
+
+    elif opt == '8':
+        deliveries = del_mgmt.get_all_delivered()
+        
+        for i in range(deliveries.size):
+            temp = deliveries.get(i)
+            print(temp.courier,",",temp.shipment)
+        return input()
+    
+    elif opt == '9':
+        deliveries = del_mgmt.get_all_failed()
+        
+        for i in range(deliveries.size):
+            temp = deliveries.get(i)
+            print(temp.courier,",",temp.shipment)
+        return input()
+    
+    elif opt == '10':
+        try: 
+            courier_id = int(input('Enter courier ID:'))
+            if courier_id < 0:
+                return input("Must be a positive number.")
+        except: return input("Must Enter an integer.")
+
+        ship_id = input("Enter shipment ID:")
+        if not del_mgmt.assign_shipment(ship_id, courier_id): return input("courier not found/isn't available or shipment not found.")
+        else: return input("Done!")
+
+    elif opt == '11':
+        try:
+            courier_id = int(input("Enter employment ID:"))
+            if courier_id < 1: return input("Employment ID must be positive.")
+            if not del_mgmt.couriers_ht.get(courier_id): return input("courier not found.")
+        except: return input("Employment ID must be an integer.")
+        courier = del_mgmt.couriers_ht.get(courier_id)
+        print(f'''National ID:{courier.national_id}
+Name:{courier.name}
+Family Name:{courier.family_name}
+Capacity:{courier.capacity}
+Availability:{courier.is_available}
+''')
+        print("leave blank to keep old data.")
+        
+        new_national_id = input("new national ID:")
+        new_name = input("new name:")
+        new_family_name = input("new family name:")
+        
+        try: 
+            new_capacity = int(input("new capacity:"))
+            if new_capacity < 1: return input("new capacity cannot be less than 1.")
+        except: return input("new capacity must be an integer.")
+       
+        new_availability = input("new availability(A:Available / D:Not Available, case sensitive):")
+        if new_availability not in ['A','D']: return input('invalid new availability.')
+        
+        del_mgmt.edit_courier_data(courier_id, new_national_id, new_name, new_family_name, new_availability, new_capacity)
+        return input("Done!")
         
 
 
