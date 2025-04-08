@@ -24,7 +24,7 @@ class deli_mgmt:
     def add_courier(self, national_ID, name, family_name, capacity, availability):
         new_courier = courier(self.employment_id_index, national_ID, name, family_name, capacity, availability)
         self.employment_id_index += 1
-        self.couriers_dll.add_first(new_courier)
+        self.couriers_dll.add_last(new_courier)
         self.couriers_ht.insert(new_courier.employment_id, new_courier)
         return True
     
@@ -150,3 +150,5 @@ class deli_mgmt:
             
         if new_avail != '':
             target_courier.is_available = new_avail
+
+        self.couriers_ht.update(employment_id, target_courier)

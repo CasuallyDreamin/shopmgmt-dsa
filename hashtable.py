@@ -66,7 +66,27 @@ class hashtable:
             if curr_data != None:
                 self.insert(curr_data.key, curr_data.value)
 
-    
+    def update(self, key, new_value):
+        to_update = self.get_pair(key)
+        
+        if to_update == None:
+            return False
+        
+        to_update.value = new_value
+        
+    def get_pair(self, key):
+        index = self.hash_func(key)
+        first_index = index
+
+        while self.arr.get(index) != None:
+            if self.arr.get(index).key == key:
+                return self.arr.get(index)
+            index = (index + 1) % self.size
+            if index == first_index:
+                break
+
+        return None
+
 class key_value:
     def __init__(self, key, value):
         self.key = key

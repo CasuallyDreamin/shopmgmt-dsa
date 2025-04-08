@@ -21,5 +21,8 @@ class courier:
     def assign_shipment(self, shipment):
         self.shipment_history.add_last(shipment)
         self.delivered += 1
-    
+
+    def get_data(self):
+        data = [self.name, self.family_name, self.national_id, str(self.capacity), self.is_available]
+        return data
         

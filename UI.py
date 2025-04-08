@@ -324,16 +324,24 @@ Availability:{courier.is_available}
         new_national_id = input("new national ID:")
         new_name = input("new name:")
         new_family_name = input("new family name:")
-        
-        try: 
-            new_capacity = int(input("new capacity:"))
-            if new_capacity < 1: return input("new capacity cannot be less than 1.")
-        except: return input("new capacity must be an integer.")
+        new_capacity = (input("new capacity:"))
+
+        if new_capacity != '':
+            try: 
+                new_capacity = int(new_capacity)
+                if new_capacity < 1: return input("new capacity cannot be less than 1.")
+            except: return input("new capacity must be an integer.")
        
         new_availability = input("new availability(A:Available / D:Not Available, case sensitive):")
-        if new_availability not in ['A','D']: return input('invalid new availability.')
+        if new_availability not in ['A','D','']: return input('invalid new availability.')
         
         del_mgmt.edit_courier_data(courier_id, new_national_id, new_name, new_family_name, new_availability, new_capacity)
+            
+        with open('delivery_information.txt','w') as f:
+            all_couriers = del_mgmt.get_all_couriers().array
+            all_couriers = [','.join(courier.get_data()) for courier in all_couriers]
+            f.write('\n'.join(all_couriers))
+
         return input("Done!")
         
 
